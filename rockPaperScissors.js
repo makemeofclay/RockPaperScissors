@@ -1,6 +1,6 @@
 const randomChoice = () => {
     const choices = ['rock', 'paper', 'scissors'];
-    let randomNum = Math.round(Math.random() * 100) % 3;
+    let randomNum = Math.round(Math.random() * 10) % 3;
     return choices[randomNum];
 };
 
@@ -66,9 +66,9 @@ class scoreHandler {
 }
 function roundDecider(p1, p2)
 {
-    console.log(p1 + " p1 and " + p2 + " p2")
     if (typeof p1 !== 'undefined' && typeof p2 !== 'undefined') 
-    {
+    {   
+    //console.log(p1 + " p1 and " + p2 + " p2")
         if (p1 === p2)
         {
             return 'tie';
@@ -78,12 +78,15 @@ function roundDecider(p1, p2)
             ['paper', 'rock'],
             ['scissors', 'paper']
         ]);
+        // test to check map console.log(beats.get(p1) + " map test");
         if (beats.get(p1) === p2)
         {
+            //console.log("output of roundDecider is p1");
             return 'p1'
         }
         else
         {
+            //console.log("output of roundDecider is p2");
             return 'p2'
         }
     }
@@ -105,15 +108,17 @@ function main() {
         console.log(comPlayer.name + " chose " + game.randomChoice);
         // TODO: find issue where both HUMAN and COMPUTER can score in one round.
         // TODO: find issue where a player can score more than once in one round
-        let outcome = roundDecider(game.playerChoice, game.randomChoice);
-        switch(outcome)
+        switch(roundDecider(game.playerChoice, game.randomChoice))
         {
             case 'tie':
-                pass;
+                console.log("TIE!");
+                break;
             case 'p1':
-                humPlayer.increment;
+                humPlayer.increment();
+                break;
             case 'p2':
-                comPlayer.increment;
+                comPlayer.increment();
+                break;
             default:
                 console.log('UH OH, SCORE LOGIC BROKE')
         }
@@ -124,8 +129,10 @@ function main() {
     if (humPlayer.score === comPlayer.score) 
     {
         console.log("Tie!");
+    } else 
+    {
+        const winner = Math.max(humPlayer.score, comPlayer.score) === humPlayer.score ? humPlayer : comPlayer;
+        console.log(winner.name + " is the winner with " + winner.score + " points!");
     }
-    const winner = Math.max(humPlayer.score, comPlayer.score) === humPlayer.score ? humPlayer : comPlayer;
-    console.log(winner.name + " is the winner with " + winner.score + " points!");
 }
 main();
