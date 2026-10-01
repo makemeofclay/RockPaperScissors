@@ -122,6 +122,10 @@ function winnerDisplay(result) {
     }
     body.appendChild(h1);
 }
+function comChoiceDisplay(choice) {
+    const display = document.querySelector('#ComChoice');
+    display.textContent = choice;
+}
 async function main() {
     const game = new gameHandler;
     const humPlayer = new scoreHandler("HUMAN");
@@ -165,6 +169,7 @@ async function main() {
         }
         // Display current score of current round
         console.log("SCORE: " + humPlayer.score + ":" + comPlayer.score);
+        comChoiceDisplay(game.randomChoice);
         displayScore(humPlayer, score1, comPlayer, score2);
     }
     winnerResult = undefined;
