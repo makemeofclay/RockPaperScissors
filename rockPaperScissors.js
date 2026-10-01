@@ -33,20 +33,31 @@ class gameHandler {
         return this.rounds;
     }
 }
-function getChoice() {
-    let choice = prompt("Enter your choice (rock, paper, or scissors): ", "");
-    if (choice === null || choice.trim() === "") {
-        console.log("Exiting Rock, Paper, Scissors.");
-        return null;
-    }
-    choice = choice.toLowerCase().trim();
-    // Validate input
-    const validChoices = ['rock', 'paper', 'scissors'];
-    if (!validChoices.includes(choice)) {
-        console.log("Invalid choice. Please enter rock, paper, or scissors.");
-        getChoice();
-    }
-    return choice;
+function waitForPlayerChoice(e) {
+    return new Promise((resolve) => {
+        e.addEventListener('click', () => {
+            resolve();
+        }, {once: true});
+    });
+}
+async function gameProcess() {
+    // UI Addition
+    let container = document.querySelector('#container');
+    console.log()
+    await waitForPlayerChoice(container);
+    container.addEventListener('click', (e) => {
+        let target = e.target;
+
+        switch(target.className) {
+            case 'rock':
+                console.log('rock');
+                return 'rock';
+            case 'paper':
+                return 'paper';
+            case 'scissors':
+                return 'scissors';
+        }
+    })
 }
 class scoreHandler {
     constructor(name) {
@@ -97,11 +108,13 @@ function main() {
     const humPlayer = new scoreHandler("HUMAN");
     const comPlayer = new scoreHandler("COMPUTER");
     // TODO: Validate rounds is integer
-    game.rounds = prompt("Set rounds.");
+    //game.rounds = prompt("Set rounds.");
+    game.rounds = 5;
+
     // Get player choice
     for (let i = 1; i <= game.rounds; i++) 
     {
-        game.playerChoice = getChoice();
+        game.playerChoice = gameProcess;
         game.randomChoice = randomChoice();
         // TODO: find issue where it displays HUMAN choice as "random" or "score"
         console.log(humPlayer.name + " chose " + game.playerChoice);
