@@ -35,29 +35,29 @@ class gameHandler {
 }
 function waitForPlayerChoice(e) {
     return new Promise((resolve) => {
-        e.addEventListener('click', () => {
-            resolve();
+        e.addEventListener('click', (event) => {
+            const button = event.target;
+            switch (button.className) {
+                case 'rock':
+                    resolve('rock');
+                    break;
+                case 'paper':
+                    resolve('paper');
+                    break;
+                case 'scissors':
+                    resolve('scissors');
+                    break;
+                default:
+                    resolve(undefined);
+            }  
         }, {once: true});
     });
 }
 async function gameProcess() {
     // UI Addition
-    let container = document.querySelector('#container');
-    console.log()
-    await waitForPlayerChoice(container);
-    container.addEventListener('click', (e) => {
-        let target = e.target;
-
-        switch(target.className) {
-            case 'rock':
-                console.log('rock');
-                return 'rock';
-            case 'paper':
-                return 'paper';
-            case 'scissors':
-                return 'scissors';
-        }
-    })
+    const container = document.querySelector('#container');
+    const playerChoice = await waitForPlayerChoice(container);
+    return playerChoice;
 }
 class scoreHandler {
     constructor(name) {
@@ -103,18 +103,46 @@ function roundDecider(p1, p2)
     }
     return 'Uh oh.'
 }
-function main() {
+function displayScore(p1, score1, p2, score2) {
+    score1.textContent = p1.score;
+    score2.textContent = p2.score;
+}
+function winnerDisplay(result) {
+    let buttons = document.querySelectorAll('button');
+    buttons.forEach((button) => {
+        button.remove()
+    })
+    const body = document.querySelector('body');
+    body.textContent = 'GAME OVER';
+    const h1 = document.createElement('h1');
+    if (result === 'tie') {
+        h1.textContent = 'TIE';
+    } else {
+        h1.textContent = result + ' WINS!';
+    }
+    body.appendChild(h1);
+}
+async function main() {
     const game = new gameHandler;
     const humPlayer = new scoreHandler("HUMAN");
     const comPlayer = new scoreHandler("COMPUTER");
+    const score1 = document.querySelector('#p1');
+    const score2 = document.querySelector('#p2');
     // TODO: Validate rounds is integer
-    //game.rounds = prompt("Set rounds.");
-    game.rounds = 5;
-
+    game.rounds = undefined;
+    while (isNaN(game.rounds))
+    {
+        game.rounds = prompt("Number of rounds?")
+    }
     // Get player choice
+    
     for (let i = 1; i <= game.rounds; i++) 
     {
-        game.playerChoice = gameProcess;
+        game.playerChoice = undefined;
+        while (typeof game.playerChoice === 'undefined') 
+        {
+            game.playerChoice = await gameProcess();
+        }
         game.randomChoice = randomChoice();
         // TODO: find issue where it displays HUMAN choice as "random" or "score"
         console.log(humPlayer.name + " chose " + game.playerChoice);
@@ -137,15 +165,16 @@ function main() {
         }
         // Display current score of current round
         console.log("SCORE: " + humPlayer.score + ":" + comPlayer.score);
-        
+        displayScore(humPlayer, score1, comPlayer, score2);
     }
+    winnerResult = undefined;
     if (humPlayer.score === comPlayer.score) 
     {
-        console.log("Tie!");
+        winnerResult = 'tie';
     } else 
     {
-        const winner = Math.max(humPlayer.score, comPlayer.score) === humPlayer.score ? humPlayer : comPlayer;
-        console.log(winner.name + " is the winner with " + winner.score + " points!");
+        winnerResult = Math.max(humPlayer.score, comPlayer.score) === humPlayer.score ? humPlayer.name : comPlayer.name;
     }
+    winnerDisplay(winnerResult);
 }
 main();
